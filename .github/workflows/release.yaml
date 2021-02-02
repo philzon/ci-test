@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: "Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Install Go"
+        uses: "actions/setup-go@v2"
+        with:
+          go-version: "1.15.x"
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Initialize"
+        run: "make build"
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Application ${{ github.ref }}
+          body: |
+            Application <VERSION> has been released.
+
+            See See [README.md](https://github.com/philzon/helm-assert/blob/master/README.md) on how to install or update the plugin.
+
+            This release is not intended for production use.
+
+            ## Changelog
+
+            ### Features
+
+            ### Deprecations
+
+            ### Bugs
+          draft: true
+          prerelease: false
+      - name: "Upload test1"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/test1.txt
+          asset_name: test1-release.txt
+          asset_content_type: text/html
+      - name: "Upload test2"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/test2.txt
+          asset_name: test2-release.txt
+          asset_content_type: text/html
+      - name: "Upload test3"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/test3.txt
+          asset_name: test3-release.txt
+          asset_content_type: text/html
